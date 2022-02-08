@@ -31,7 +31,7 @@ export interface ILayoutComponent extends ILayoutEntry {
   grid?: IGrid;
 }
 
-export type GroupTypes = 'Group' | 'group';
+export type GroupTypes = 'Group' | 'group' | 'likert' | 'Likert';
 
 export type ComponentTypes =
   | 'AddressComponent'

@@ -1,21 +1,22 @@
-import { AddressComponent } from './advanced/AddressComponent';
-import { AttachmentListComponent } from './base/AttachmentListComponent';
-import { ButtonComponent } from './base/ButtonComponent';
-import { CheckboxContainerComponent } from './base/CheckboxesContainerComponent';
+import {AddressComponent} from './advanced/AddressComponent';
+import {AttachmentListComponent} from './base/AttachmentListComponent';
+import {ButtonComponent} from './base/ButtonComponent';
+import {CheckboxContainerComponent} from './base/CheckboxesContainerComponent';
 import DatepickerComponent from './base/DatepickerComponent';
 import DropdownComponent from './base/DropdownComponent';
-import { FileUploadComponent } from './base/FileUploadComponent';
-import { HeaderComponent } from './base/HeaderComponent';
-import { InputComponent } from './base/InputComponent';
-import { ParagraphComponent } from './base/ParagraphComponent';
-import { RadioButtonContainerComponent } from './base/RadioButtonsContainerComponent';
-import { TextAreaComponent } from './base/TextAreaComponent';
-import { ImageComponent } from './base/ImageComponent';
-import { NavigationButtons as NavigationButtonsComponent } from './presentation/NavigationButtons';
-import { InstantiationButtonComponent } from './base/InstantiationButtonComponent';
-import { IGenericComponentProps } from './GenericComponent';
-import { IComponentFormData } from 'src/utils/formComponentUtils';
-import { ILanguage } from 'altinn-shared/types';
+import {FileUploadComponent} from './base/FileUploadComponent';
+import {HeaderComponent} from './base/HeaderComponent';
+import {InputComponent} from './base/InputComponent';
+import {ParagraphComponent} from './base/ParagraphComponent';
+import {RadioButtonContainerComponent} from './base/RadioButtonsContainerComponent';
+import {TextAreaComponent} from './base/TextAreaComponent';
+import {ImageComponent} from './base/ImageComponent';
+import {NavigationButtons as NavigationButtonsComponent} from './presentation/NavigationButtons';
+import {InstantiationButtonComponent} from './base/InstantiationButtonComponent';
+import {IGenericComponentProps} from './GenericComponent';
+import {IComponentFormData} from 'src/utils/formComponentUtils';
+import {ILanguage} from 'altinn-shared/types';
+import {LikertComponent} from "./base/LikertComponent";
 
 export interface IComponent {
   name: string;
@@ -43,6 +44,7 @@ export enum ComponentTypes {
   NavigationButtons,
   InstantiationButton,
   AttachmentList,
+  Likert
 }
 
 export const textComponents: IComponent[] = [
@@ -145,6 +147,11 @@ export const schemaComponents: IComponent[] = [
     Tag: AttachmentListComponent,
     Type: ComponentTypes.AttachmentList,
   },
+  {
+    name: 'Likert',
+    Tag: LikertComponent,
+    Type: ComponentTypes.Likert,
+  }
 ];
 
 export const advancedComponents: IComponent[] = [
@@ -160,7 +167,7 @@ export const advancedComponents: IComponent[] = [
 ];
 
 export interface IComponentProps extends IGenericComponentProps {
-  handleDataChange: (value: string, key?: string) => void;
+  handleDataChange: (value: string, key?: string, rowIndex?: number) => void;
   handleFocusUpdate: (componentId: string, step?: number) => void;
   getTextResource: (key: string) => React.ReactNode;
   getTextResourceAsString: (key: string) => string;

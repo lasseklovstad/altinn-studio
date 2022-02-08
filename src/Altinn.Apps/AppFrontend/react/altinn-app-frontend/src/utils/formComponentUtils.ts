@@ -1,11 +1,11 @@
-import { ILanguage } from 'altinn-shared/types';
+import {ILanguage} from 'altinn-shared/types';
 import {
   getLanguageFromKey,
   getParsedLanguageFromText,
   getTextResourceByKey,
 } from 'altinn-shared/utils';
 import React from 'react';
-import { IFormData } from 'src/features/form/data/formDataReducer';
+import {IFormData} from 'src/features/form/data/formDataReducer';
 import {
   ILayoutComponent,
   ILayoutGroup,
@@ -20,6 +20,7 @@ import {
   IOptions,
   IValidations,
 } from 'src/types';
+import form from "../features/form/containers/Form";
 
 export const componentValidationsHandledByGenericComponent = (
   dataModelBindings: any,
@@ -62,6 +63,7 @@ export const getComponentValidations = (
 
 export interface IComponentFormData {
   simpleBinding?: string;
+
   [binding: string]: string;
 }
 
@@ -73,10 +75,24 @@ export const getFormDataForComponent = (
     return {} as IComponentFormData;
   }
 
-  const formDataObj:IComponentFormData = {};
+  const formDataObj: IComponentFormData = {};
   Object.keys(dataModelBindings).forEach((key: any) => {
     const binding = dataModelBindings[key];
-    if (formData[binding]) {
+    if (key === "likert") {
+      const likertBinding = binding as unknown as { list: string, question: string, answer: string }
+      for (const formDataKey in formData) {
+        if (formDataKey.startsWith(likertBinding.list)) {
+          const beforeSeperator = formDataKey.indexOf("[")
+          const afterSeperator = formDataKey.indexOf("]")
+          const rowIndex = formDataKey.substring(beforeSeperator + 1, afterSeperator)
+          const baseKey = `${likertBinding.list}[${rowIndex}]`
+          const questionKey = `${baseKey}.${likertBinding.question}`
+          const answerKey = `${baseKey}.${likertBinding.answer}`
+          formDataObj[questionKey] = formData[questionKey]
+          formDataObj[answerKey] = formData[answerKey] || ""
+        }
+      }
+    } else if (formData[binding]) {
       formDataObj[key] = formData[binding];
     } else {
       formDataObj[key] = '';
@@ -257,7 +273,7 @@ export function selectComponentTexts(
   textResources: ITextResource[],
   textResourceBindings: ITextResourceBindings,
 ) {
-  const result: {[textResourceKey: string]: React.ReactNode} = {};
+  const result: { [textResourceKey: string]: React.ReactNode } = {};
 
   Object.keys(textResourceBindings).forEach((key) => {
     result[key] = getTextResource(textResourceBindings[key], textResources);

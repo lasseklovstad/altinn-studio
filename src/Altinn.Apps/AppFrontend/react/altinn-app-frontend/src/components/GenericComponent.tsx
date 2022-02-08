@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { shallowEqual } from 'react-redux';
-import { getTextResourceByKey } from 'altinn-shared/utils';
+import {shallowEqual} from 'react-redux';
+import {getTextResourceByKey} from 'altinn-shared/utils';
 import {
   ILabelSettings,
   Triggers,
   IComponentValidations
 } from 'src/types';
 
-import { Grid, makeStyles } from '@material-ui/core';
+import {Grid, makeStyles} from '@material-ui/core';
 import classNames from 'classnames';
-import components, { IComponentProps } from '.';
+import components, {IComponentProps} from '.';
 import FormDataActions from '../features/form/data/formDataActions';
 import {
   IDataModelBindings,
@@ -18,11 +18,11 @@ import {
   ITextResourceBindings,
 } from '../features/form/layout';
 import RuleActions from '../features/form/rules/rulesActions';
-import { setCurrentSingleFieldValidation } from '../features/form/validation/validationSlice';
-import { makeGetFocus, makeGetHidden } from '../selectors/getLayoutData';
+import {setCurrentSingleFieldValidation} from '../features/form/validation/validationSlice';
+import {makeGetFocus, makeGetHidden} from '../selectors/getLayoutData';
 import Label from '../features/form/components/Label';
 import Legend from '../features/form/components/Legend';
-import { renderValidationMessagesForComponent } from '../utils/render';
+import {renderValidationMessagesForComponent} from '../utils/render';
 import {
   getFormDataForComponent,
   componentValidationsHandledByGenericComponent,
@@ -31,10 +31,10 @@ import {
   isComponentValid,
   selectComponentTexts,
 } from '../utils/formComponentUtils';
-import { FormLayoutActions } from '../features/form/layout/formLayoutSlice';
+import {FormLayoutActions} from '../features/form/layout/formLayoutSlice';
 import Description from '../features/form/components/Description';
-import { useAppDispatch, useAppSelector } from 'src/common/hooks';
-import { ILanguage } from 'altinn-shared/types';
+import {useAppDispatch, useAppSelector} from 'src/common/hooks';
+import {ILanguage} from 'altinn-shared/types';
 
 export interface IGenericComponentProps {
   id: string;
@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function GenericComponent(props: IGenericComponentProps) {
-  const { id, ...passThroughProps } = props;
+  const {id, ...passThroughProps} = props;
   const dispatch = useAppDispatch();
   const classes = useStyles(props);
   const GetHiddenSelector = makeGetHidden();
@@ -129,7 +129,7 @@ export function GenericComponent(props: IGenericComponentProps) {
     return null;
   }
 
-  const handleDataUpdate = (value: string, key = 'simpleBinding') => {
+  const handleDataUpdate = (value: string, key = 'simpleBinding', rowIndex = 0) => {
     if (!props.dataModelBindings || !props.dataModelBindings[key]) {
       return;
     }
@@ -142,8 +142,11 @@ export function GenericComponent(props: IGenericComponentProps) {
       // data unchanged, do nothing
       return;
     }
-
-    const dataModelBinding = props.dataModelBindings[key];
+    const getLikertBinding = () => {
+      const {likert: {list, answer}} = (props.dataModelBindings as any)
+      return `${list}[${rowIndex}].${answer}`
+    }
+    const dataModelBinding = key === "likert" ? getLikertBinding() : props.dataModelBindings[key];
     if (props.triggers && props.triggers.includes(Triggers.Validation)) {
       dispatch(
         setCurrentSingleFieldValidation({
@@ -182,7 +185,8 @@ export function GenericComponent(props: IGenericComponentProps) {
     if (
       props.type === 'AddressComponent' ||
       props.type === 'Datepicker' ||
-      props.type === 'FileUpload'
+      props.type === 'FileUpload' ||
+      props.type === 'Likert'
     ) {
       return componentValidations;
     }
@@ -200,8 +204,8 @@ export function GenericComponent(props: IGenericComponentProps) {
   );
   if (!RenderComponent) {
     return <div>
-      Unknown component type: {props.type}<br />
-      Valid component types: {components.map(c=>c.name).join(', ')}
+      Unknown component type: {props.type}<br/>
+      Valid component types: {components.map(c => c.name).join(', ')}
     </div>;
   }
 
@@ -267,7 +271,7 @@ export function GenericComponent(props: IGenericComponentProps) {
     return getTextResourceByKey(key, textResources);
   };
 
-  const componentProps:IComponentProps = {
+  const componentProps: IComponentProps = {
     handleDataChange: handleDataUpdate,
     handleFocusUpdate,
     getTextResource: getTextResourceWrapper,
@@ -327,7 +331,7 @@ export function GenericComponent(props: IGenericComponentProps) {
             language={language}
             texts={texts}
           />
-          <RenderDescription key={`description-${props.id}`} />
+          <RenderDescription key={`description-${props.id}`}/>
         </Grid>
       )}
       <Grid
