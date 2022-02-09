@@ -37,6 +37,5 @@ export function AltinnTableHeader(props: IAltinnTableHeaderProps) {
     <TableHead id={id} className={classes.tableHeader}>
       {children}
     </TableHead>
-
   );
 }

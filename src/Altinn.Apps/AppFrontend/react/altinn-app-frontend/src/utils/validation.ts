@@ -366,7 +366,18 @@ export function validateEmptyField(
   }
   const fieldKeys: string[] = [];
   Object.keys(dataModelBindings).forEach((modelBinding) => {
-    fieldKeys.push(modelBinding);
+    if(modelBinding.toLocaleLowerCase() === "likert") {
+      const likertKeys = Object.keys(formData)
+      .filter((key) => key.match(new RegExp(`^${(dataModelBindings as any).likert.list}\\[\\d+]\\.${(dataModelBindings as any).likert.question}$`)))
+      .map(key => key.replace((dataModelBindings as any).likert.question, (dataModelBindings as any).likert.answer));
+      likertKeys.forEach(likertKey => {
+        fieldKeys.push(likertKey)
+      })
+    } else {
+
+      fieldKeys.push(modelBinding);
+    }
+
   });
   const componentValidations: IComponentValidations = {};
   fieldKeys.forEach((fieldKey) => {
@@ -376,14 +387,18 @@ export function validateEmptyField(
         groupDataBinding,
         `${groupDataBinding}[${index}]`,
       );
+    } else if (dataModelBindings.likert) {
+      dataModelBindingKey = fieldKey
     }
+
     const value = formData[dataModelBindingKey];
     if (!value && fieldKey) {
-      componentValidations[fieldKey] = {
+      const finalFieldKey = (dataModelBindings as any).likert ? "simpleBinding" : fieldKey;
+      componentValidations[finalFieldKey] = {
         errors: [],
         warnings: [],
       };
-      componentValidations[fieldKey].errors.push(
+      componentValidations[finalFieldKey].errors.push(
         getLanguageFromKey('form_filler.error_required', language),
       );
     }

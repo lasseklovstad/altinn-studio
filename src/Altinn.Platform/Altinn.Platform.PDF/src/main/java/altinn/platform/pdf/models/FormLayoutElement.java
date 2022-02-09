@@ -13,7 +13,7 @@ import lombok.Setter;
 public class FormLayoutElement {
   private String type;
   private String id;
-  private HashMap<String, String> dataModelBindings;
+  private HashMap<String, Object> dataModelBindings;
   private TextResourceBindings textResourceBindings;
   private String optionsId;
   private List<Option> options;

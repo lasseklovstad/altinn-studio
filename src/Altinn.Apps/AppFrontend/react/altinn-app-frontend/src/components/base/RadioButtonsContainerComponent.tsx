@@ -157,7 +157,7 @@ export const RadioButtonContainerComponent = ({
   );
 };
 
-const StyledRadio = (radioProps: RadioProps) => {
+export const StyledRadio = (radioProps: RadioProps) => {
   const classes = useStyles();
 
   return (

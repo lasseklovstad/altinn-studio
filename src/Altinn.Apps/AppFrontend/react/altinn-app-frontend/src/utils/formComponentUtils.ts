@@ -27,9 +27,10 @@ export const componentValidationsHandledByGenericComponent = (
   type: string,
 ): boolean => {
   return (
-    !!dataModelBindings?.simpleBinding &&
+    (!!dataModelBindings?.simpleBinding &&
     type !== 'FileUpload' &&
-    type !== 'Datepicker'
+    type !== 'Datepicker') ||
+    type === 'Likert'
   );
 };
 

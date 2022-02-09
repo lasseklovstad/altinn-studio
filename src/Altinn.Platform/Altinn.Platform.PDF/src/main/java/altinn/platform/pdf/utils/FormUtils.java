@@ -149,7 +149,7 @@ public class FormUtils {
 
     filtered.forEach(formLayoutElement -> {
       if (formLayoutElement.getType().equalsIgnoreCase(GROUP_NAME)) {
-        String parentGroupBinding = formLayoutElement.getDataModelBindings().get(GROUP_NAME);
+        String parentGroupBinding = (String) formLayoutElement.getDataModelBindings().get(GROUP_NAME);
         formLayoutElement.setCount(getGroupCount(parentGroupBinding, formData));
         List<FormLayoutElement> groupChildren = getChildGroups(formLayoutElement, layout);
         initiated.add(formLayoutElement);
@@ -160,8 +160,8 @@ public class FormUtils {
               copy.setType(GROUP_NAME);
               copy.setId(groupChild.getId() + "-" + i);
               copy.setChildren(groupChild.getChildren());
-              HashMap<String, String> copyDataModelBindings = new HashMap<>();
-              String childGroupBinding = groupChild.getDataModelBindings().get(GROUP_NAME);
+              HashMap<String, Object> copyDataModelBindings = new HashMap<>();
+              String childGroupBinding = (String) groupChild.getDataModelBindings().get(GROUP_NAME);
               String indexedChildGroupBinding = childGroupBinding.replace(parentGroupBinding, parentGroupBinding + "[" + i + "]");
               copyDataModelBindings.put(GROUP_NAME, indexedChildGroupBinding);
               copy.setDataModelBindings(copyDataModelBindings);

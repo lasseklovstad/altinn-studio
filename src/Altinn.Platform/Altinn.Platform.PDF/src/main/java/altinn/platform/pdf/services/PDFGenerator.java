@@ -216,13 +216,13 @@ public class PDFGenerator {
     if (!LayoutUtils.includeComponentInPdf(componentId, layoutSettings)) {
       return;
     }
-    String groupBinding = element.getDataModelBindings().get("group");
+    String groupBinding = (String) element.getDataModelBindings().get("group");
     for (int groupIndex = 0; groupIndex < element.getCount(); groupIndex++) {
       for (String childId : element.getChildren()) {
         FormLayoutElement childElement = originalFormLayout.getData().getLayout().stream().filter(formLayoutElement -> formLayoutElement.getId().equals(childId)).findFirst().orElse(null);
-        HashMap<String, String> originalDataModelBindings = new HashMap<>();
+        HashMap<String, Object> originalDataModelBindings = new HashMap<>();
         if (childElement != null && childElement.getDataModelBindings() != null) {
-          childElement.getDataModelBindings().entrySet().forEach(stringStringEntry -> originalDataModelBindings.put(stringStringEntry.getKey(), stringStringEntry.getValue()));
+          childElement.getDataModelBindings().forEach((key, value) -> originalDataModelBindings.put(key, (String) value));
         }
 
         if (childElement != null && childElement.getType().equalsIgnoreCase("group")) {
@@ -234,9 +234,9 @@ public class PDFGenerator {
           continue;
         }
         if (childElement.getDataModelBindings() != null && !childElement.getType().equalsIgnoreCase("group")) {
-          Map<String, String> dataBindings = childElement.getDataModelBindings();
-          for (Map.Entry<String, String> dataBinding : dataBindings.entrySet()) {
-            String currentBinding = dataBinding.getValue();
+          HashMap<String, Object> dataBindings = childElement.getDataModelBindings();
+          for (Map.Entry<String, Object> dataBinding : dataBindings.entrySet()) {
+            String currentBinding = (String) dataBinding.getValue();
             if (childGroup) {
               int indexStart = groupBinding.indexOf("[");
               int indexEnd = groupBinding.indexOf("]");
@@ -425,7 +425,7 @@ public class PDFGenerator {
     if (element.getOptionsId() != null || element.getOptions() != null) {
       value = getDisplayValueFromOptions(element);
     } else {
-      value = FormUtils.getFormDataByKey(element.getDataModelBindings().get("simpleBinding"), formData);
+      value = FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("simpleBinding"), formData);
     }
 
     if (element.getType().equalsIgnoreCase("Datepicker")) {
@@ -436,7 +436,7 @@ public class PDFGenerator {
   }
 
   private String getDisplayValueFromOptions(FormLayoutElement element) {
-    String value = FormUtils.getFormDataByKey(element.getDataModelBindings().get("simpleBinding"), formData);
+    String value = FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("simpleBinding"), formData);
     List<String> splitFormData;
     if (element.getType().equalsIgnoreCase("Checkboxes")) {
       // checkboxes can have multiple values, need to fetch label for each one
@@ -508,25 +508,25 @@ public class PDFGenerator {
 
   private void renderAddressComponent(FormLayoutElement element) throws IOException {
     renderText(getLanguageString("address"), font, fontSize, StandardStructureTypes.P);
-    renderContent(FormUtils.getFormDataByKey(element.getDataModelBindings().get("address"), this.formData));
+    renderContent(FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("address"), this.formData));
     yPoint -= componentMargin;
 
     renderText(getLanguageString("zip_code"), font, fontSize, StandardStructureTypes.P);
-    renderContent(FormUtils.getFormDataByKey(element.getDataModelBindings().get("zipCode"), this.formData));
+    renderContent(FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("zipCode"), this.formData));
     yPoint -= componentMargin;
 
     renderText(getLanguageString("post_place"), font, fontSize, StandardStructureTypes.P);
-    renderContent(FormUtils.getFormDataByKey(element.getDataModelBindings().get("postPlace"), this.formData));
+    renderContent(FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("postPlace"), this.formData));
     yPoint -= componentMargin;
 
     if (!element.isSimplified()) {
       renderText(getLanguageString("care_of"), font, fontSize, StandardStructureTypes.P);
       renderText(getLanguageString("house_number_helper"), font, fontSize, StandardStructureTypes.P);
-      renderContent(FormUtils.getFormDataByKey(element.getDataModelBindings().get("careOf"), this.formData));
+      renderContent(FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("careOf"), this.formData));
       yPoint -= componentMargin;
 
       renderText(getLanguageString("house_number"), font, fontSize, StandardStructureTypes.P);
-      renderContent(FormUtils.getFormDataByKey(element.getDataModelBindings().get("houseNumber"), this.formData));
+      renderContent(FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("houseNumber"), this.formData));
       yPoint -= componentMargin;
     }
   }
