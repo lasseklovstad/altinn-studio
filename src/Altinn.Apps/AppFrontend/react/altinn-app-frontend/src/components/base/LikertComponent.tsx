@@ -74,8 +74,7 @@ export const LikertComponent = (props: ILikertComponentProps) => {
 
   return (
     <>
-      <TableContainer component={Grid}>
-        <Table>
+        <AltinnTable id={id} tableLayout='auto' wordBreak='normal'>
           <AltinnTableHeader id={`likert-table-header-${id}`}>
             <AltinnTableRow>
               <TableCell />
@@ -128,8 +127,7 @@ export const LikertComponent = (props: ILikertComponentProps) => {
               );
             })}
           </AltinnTableBody>
-        </Table>
-      </TableContainer>
+        </AltinnTable>
     </>
   );
 };
