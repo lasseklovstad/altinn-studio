@@ -71,7 +71,7 @@ export const LikertComponent = (props: ILikertComponentProps) => {
       }),
     );
   };
-  console.log(componentValidations, 'Inne i Likert');
+
   return (
     <>
       <TableContainer component={Grid}>
@@ -82,7 +82,7 @@ export const LikertComponent = (props: ILikertComponentProps) => {
               {options.map((option, index) => {
                 const colLabelId = `col-label-${index}`;
                 return (
-                  <TableCell key={option.value} id={colLabelId}>
+                  <TableCell key={option.value} id={colLabelId} align='center' >
                     {option.label}
                   </TableCell>
                 );
@@ -94,15 +94,19 @@ export const LikertComponent = (props: ILikertComponentProps) => {
               const rowLabelId = `row-label-${rowIndex}`;
               return (
                 <TableRow key={row.label} role={'radiogroup'}>
-                  <TableCell scope='row' id={rowLabelId}>
+                  <TableCell scope='row' id={rowLabelId} style={{whiteSpace: 'normal'}}>
                     {row.label}
                   </TableCell>
                   {options.map((option, colIndex) => {
                     const colLabelId = `col-label-${colIndex}`;
                     const inputId = `input-${rowIndex}-${colIndex}`;
                     return (
-                      <TableCell key={option.value}>
-                        <label htmlFor={inputId}>
+                      <TableCell key={option.value} >
+                        <label htmlFor={inputId} style={{
+                          width: '100%',
+                          display: 'flex',
+                          justifyContent: 'center'
+                        }}>
                           <StyledRadio
                             inputProps={{
                               'aria-labelledby': `${rowLabelId} ${colLabelId}`,
