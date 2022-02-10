@@ -4,19 +4,20 @@ import {ButtonComponent} from './base/ButtonComponent';
 import {CheckboxContainerComponent} from './base/CheckboxesContainerComponent';
 import DatepickerComponent from './base/DatepickerComponent';
 import DropdownComponent from './base/DropdownComponent';
-import {FileUploadComponent} from './base/FileUploadComponent';
-import {HeaderComponent} from './base/HeaderComponent';
-import {InputComponent} from './base/InputComponent';
-import {ParagraphComponent} from './base/ParagraphComponent';
-import {RadioButtonContainerComponent} from './base/RadioButtonsContainerComponent';
-import {TextAreaComponent} from './base/TextAreaComponent';
-import {ImageComponent} from './base/ImageComponent';
-import {NavigationButtons as NavigationButtonsComponent} from './presentation/NavigationButtons';
-import {InstantiationButtonComponent} from './base/InstantiationButtonComponent';
-import {IGenericComponentProps} from './GenericComponent';
-import {IComponentFormData} from 'src/utils/formComponentUtils';
-import {ILanguage} from 'altinn-shared/types';
-import {LikertComponent} from "./base/LikertComponent";
+import { FileUploadComponent } from './base/FileUpload/FileUploadComponent';
+import { FileUploadWithTagComponent } from './base/FileUpload/FileUploadWithTag/FileUploadWithTagComponent';
+import { HeaderComponent } from './base/HeaderComponent';
+import { InputComponent } from './base/InputComponent';
+import { ParagraphComponent } from './base/ParagraphComponent';
+import { RadioButtonContainerComponent } from './base/RadioButtonsContainerComponent';
+import { TextAreaComponent } from './base/TextAreaComponent';
+import { ImageComponent } from './base/ImageComponent';
+import { NavigationButtons as NavigationButtonsComponent } from './presentation/NavigationButtons';
+import { InstantiationButtonComponent } from './base/InstantiationButtonComponent';
+import { IGenericComponentProps } from './GenericComponent';
+import { IComponentFormData } from 'src/utils/formComponentUtils';
+import { ILanguage } from 'altinn-shared/types';
+import { LikertComponent } from "./base/LikertComponent";
 
 export interface IComponent {
   name: string;
@@ -38,6 +39,7 @@ export enum ComponentTypes {
   RadioButton,
   TextArea,
   FileUpload,
+  FileUploadWithTag,
   Button,
   Group,
   AddressComponent,
@@ -126,6 +128,11 @@ export const schemaComponents: IComponent[] = [
     name: 'FileUpload',
     Tag: FileUploadComponent,
     Type: ComponentTypes.FileUpload,
+  },
+  {
+    name: 'FileUploadWithTag',
+    Tag: FileUploadWithTagComponent,
+    Type: ComponentTypes.FileUploadWithTag,
   },
   {
     name: 'Button',
