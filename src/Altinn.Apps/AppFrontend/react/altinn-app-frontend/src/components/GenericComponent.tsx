@@ -192,12 +192,11 @@ export function GenericComponent(props: IGenericComponentProps) {
       props.type === 'AddressComponent' ||
       props.type === 'Datepicker' ||
       props.type === 'FileUpload' ||
-      props.type === 'FileUploadWithTag'
+      props.type === 'FileUploadWithTag' ||
+      props.type === 'Likert'
     ) {
-      console.log(componentValidations, 'Halla');
       return componentValidations;
     }
-    console.log(componentValidations, 'Halla null');
     return null;
   };
 

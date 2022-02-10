@@ -395,12 +395,11 @@ export function validateEmptyField(
 
     const value = formData[dataModelBindingKey];
     if (!value && fieldKey) {
-      const finalFieldKey = (dataModelBindings as any).likert ? "simpleBinding" : fieldKey;
-      componentValidations[finalFieldKey] = {
+      componentValidations[fieldKey] = {
         errors: [],
         warnings: [],
       };
-      componentValidations[finalFieldKey].errors.push(
+      componentValidations[fieldKey].errors.push(
         getLanguageFromKey('form_filler.error_required', language),
       );
     }
