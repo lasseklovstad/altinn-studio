@@ -84,8 +84,8 @@ export const getFormDataForComponent = (
       const likertBinding = binding as unknown as { list: string, question: string, answer: string }
       for (const formDataKey in formData) {
         if (formDataKey.startsWith(likertBinding.list)) {
-          const beforeSeperator = formDataKey.indexOf("[")
-          const afterSeperator = formDataKey.indexOf("]")
+          const beforeSeperator = formDataKey.lastIndexOf("[")
+          const afterSeperator = formDataKey.lastIndexOf("]")
           const rowIndex = formDataKey.substring(beforeSeperator + 1, afterSeperator)
           const baseKey = `${likertBinding.list}[${rowIndex}]`
           const questionKey = `${baseKey}.${likertBinding.question}`
