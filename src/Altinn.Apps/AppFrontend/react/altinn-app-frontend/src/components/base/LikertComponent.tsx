@@ -35,6 +35,7 @@ export const LikertComponent = (props: ILikertComponentProps) => {
     dataModelBindings,
     formData,
     componentValidations,
+    getTextResource
   } = props;
   const apiOptions = useAppSelector(
     (state) => state.optionState.options[optionsId],
@@ -101,7 +102,7 @@ export const LikertComponent = (props: ILikertComponentProps) => {
                 const colLabelId = `col-label-${index}`;
                 return (
                   <TableCell key={option.value} id={colLabelId} align='center'>
-                    {option.label}
+                    {getTextResource(option.label)}
                   </TableCell>
                 );
               })}
@@ -117,7 +118,7 @@ export const LikertComponent = (props: ILikertComponentProps) => {
                     id={rowLabelId}
                     style={{ whiteSpace: 'normal' }}
                   >
-                    {row.label}
+                    {getTextResource(row.label)}
                   </TableCell>
                   {options.map((option, colIndex) => {
                     const colLabelId = `col-label-${colIndex}`;
@@ -176,7 +177,7 @@ export const LikertComponent = (props: ILikertComponentProps) => {
                     else setExpandedRows([...expandedRows, rowIndex]);
                   }}
                 >
-                  <AccordionSummary>{row.label}</AccordionSummary>
+                  <AccordionSummary>{getTextResource(row.label)}</AccordionSummary>
                   <AccordionDetails>
                     <RadioGroup
                       aria-labelledby={`${id}-label-${rowIndex}`}
@@ -193,7 +194,7 @@ export const LikertComponent = (props: ILikertComponentProps) => {
                         <React.Fragment key={index}>
                           <FormControlLabel
                             control={<StyledRadio autoFocus={false} />}
-                            label={option.label}
+                            label={getTextResource(option.label)}
                             value={option.value}
                             classes={null}
                           />
