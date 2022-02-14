@@ -21,7 +21,7 @@ import { StyledRadio } from './RadioButtonsContainerComponent';
 import { useState, useEffect } from 'react';
 import { renderValidationMessagesForComponent } from '../../utils/render';
 
-interface ILikertComponentProps extends IComponentProps {
+export interface ILikertComponentProps extends IComponentProps {
   componentValidations?: any;
   optionsId: string;
   preselectedOptionIndex: number;
@@ -35,7 +35,7 @@ export const LikertComponent = (props: ILikertComponentProps) => {
     dataModelBindings,
     formData,
     componentValidations,
-    getTextResource
+    getTextResource,
   } = props;
   const apiOptions = useAppSelector(
     (state) => state.optionState.options[optionsId],
@@ -50,8 +50,13 @@ export const LikertComponent = (props: ILikertComponentProps) => {
   const [invalidatedRows, setInvalidatedRows] = useState([]);
   useEffect(() => {
     if (componentValidations && Object.keys(componentValidations).length > 0) {
-      const invalidatedRows = Object.keys(componentValidations).map(key =>
-        parseInt(new RegExp(`${(dataModelBindings as any).likert.list}\\[(\\d+).*`).exec(key)[1]));
+      const invalidatedRows = Object.keys(componentValidations).map((key) =>
+        parseInt(
+          new RegExp(
+            `${(dataModelBindings as any).likert.list}\\[(\\d+).*`,
+          ).exec(key)[1],
+        ),
+      );
       setExpandedRows(invalidatedRows);
       setInvalidatedRows(invalidatedRows);
     }
@@ -94,71 +99,87 @@ export const LikertComponent = (props: ILikertComponentProps) => {
     <>
       {!mobileView && (
         <React.Fragment>
-        <AltinnTable id={id} tableLayout='auto' wordBreak='normal'>
-          <AltinnTableHeader id={`likert-table-header-${id}`}>
-            <AltinnTableRow>
-              <TableCell />
-              {options.map((option, index) => {
-                const colLabelId = `col-label-${index}`;
+          <AltinnTable id={id} tableLayout='auto' wordBreak='normal'>
+            <AltinnTableHeader id={`likert-table-header-${id}`}>
+              <AltinnTableRow>
+                <TableCell />
+                {options.map((option, index) => {
+                  const colLabelId = `col-label-${index}`;
+                  return (
+                    <TableCell
+                      key={option.value}
+                      id={colLabelId}
+                      align='center'
+                    >
+                      {getTextResource(option.label)}
+                    </TableCell>
+                  );
+                })}
+              </AltinnTableRow>
+            </AltinnTableHeader>
+            <AltinnTableBody id={`likert-table-body-${id}`}>
+              {rows.map((row, rowIndex) => {
+                const rowLabelId = `row-label-${rowIndex}`;
                 return (
-                  <TableCell key={option.value} id={colLabelId} align='center'>
-                    {getTextResource(option.label)}
-                  </TableCell>
+                  <TableRow
+                    key={row.label}
+                    role={'radiogroup'}
+                    aria-labelledby={rowLabelId}
+                  >
+                    <TableCell
+                      scope='row'
+                      id={rowLabelId}
+                      style={{ whiteSpace: 'normal' }}
+                    >
+                      {getTextResource(row.label)}
+                    </TableCell>
+                    {options.map((option, colIndex) => {
+                      const colLabelId = `col-label-${colIndex}`;
+                      const inputId = `input-${rowIndex}-${colIndex}`;
+                      const isChecked = selected[rowIndex] === option.value;
+                      return (
+                        <TableCell key={option.value}>
+                          <label
+                            htmlFor={inputId}
+                            style={{
+                              width: '100%',
+                              display: 'flex',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <StyledRadio
+                              inputProps={{
+                                'aria-labelledby': `${rowLabelId} ${colLabelId}`,
+                                id: inputId,
+                                role: 'radio',
+                                name: rowLabelId,
+                                'aria-checked': isChecked,
+                              }}
+                              checked={isChecked}
+                              onChange={() =>
+                                onDataChange(option.value as string, rowIndex)
+                              }
+                              value={option.value}
+                            />
+                          </label>
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
                 );
               })}
-            </AltinnTableRow>
-          </AltinnTableHeader>
-          <AltinnTableBody id={`likert-table-body-${id}`}>
-            {rows.map((row, rowIndex) => {
-              const rowLabelId = `row-label-${rowIndex}`;
-              return (
-                <TableRow key={row.label} role={'radiogroup'}>
-                  <TableCell
-                    scope='row'
-                    id={rowLabelId}
-                    style={{ whiteSpace: 'normal' }}
-                  >
-                    {getTextResource(row.label)}
-                  </TableCell>
-                  {options.map((option, colIndex) => {
-                    const colLabelId = `col-label-${colIndex}`;
-                    const inputId = `input-${rowIndex}-${colIndex}`;
-                    return (
-                      <TableCell key={option.value}>
-                        <label
-                          htmlFor={inputId}
-                          style={{
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <StyledRadio
-                            inputProps={{
-                              'aria-labelledby': `${rowLabelId} ${colLabelId}`,
-                              id: inputId,
-                              role: 'radio',
-                              name: rowLabelId,
-                            }}
-                            checked={selected[rowIndex] === option.value}
-                            onChange={() =>
-                              onDataChange(option.value as string, rowIndex)
-                            }
-                            value={option.value}
-                          />
-                        </label>
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
-          </AltinnTableBody>
-        </AltinnTable>
-        {invalidatedRows.length > 0 &&  renderValidationMessagesForComponent(
-                  {errors: ['HEIHEIHEI, ro ned nå! Tror du virkelig at du har fylt ut alt nå???'], warnings: []},
-                  `${id}-error`,
-                )}
+            </AltinnTableBody>
+          </AltinnTable>
+          {invalidatedRows.length > 0 &&
+            renderValidationMessagesForComponent(
+              {
+                errors: [
+                  'HEIHEIHEI, ro ned nå! Tror du virkelig at du har fylt ut alt nå???',
+                ],
+                warnings: [],
+              },
+              `${id}-error`,
+            )}
         </React.Fragment>
       )}
       {mobileView && (
@@ -177,7 +198,9 @@ export const LikertComponent = (props: ILikertComponentProps) => {
                     else setExpandedRows([...expandedRows, rowIndex]);
                   }}
                 >
-                  <AccordionSummary>{getTextResource(row.label)}</AccordionSummary>
+                  <AccordionSummary>
+                    {getTextResource(row.label)}
+                  </AccordionSummary>
                   <AccordionDetails>
                     <RadioGroup
                       aria-labelledby={`${id}-label-${rowIndex}`}
@@ -203,10 +226,11 @@ export const LikertComponent = (props: ILikertComponentProps) => {
                     </RadioGroup>
                   </AccordionDetails>
                 </Accordion>
-                {invalidatedRows.includes(rowIndex) &&  renderValidationMessagesForComponent(
-                  {errors: ['heihei, dette er feil'], warnings: []},
-                  `${rowIndex}`,
-                )}
+                {invalidatedRows.includes(rowIndex) &&
+                  renderValidationMessagesForComponent(
+                    { errors: ['heihei, dette er feil'], warnings: [] },
+                    `${rowIndex}`,
+                  )}
               </React.Fragment>
             );
 
