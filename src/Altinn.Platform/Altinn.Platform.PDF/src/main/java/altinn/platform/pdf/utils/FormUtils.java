@@ -47,6 +47,103 @@ public class FormUtils {
     return TextUtils.removeIllegalChars(value);
   }
 
+  public static int countElements(String theKey, Document formData) {
+    if (theKey == null || formData == null) {
+      return 0;
+    }
+    if (theKey.contains(".value")) {
+      theKey = theKey.replace(".value", "");
+    }
+    String[] keys = theKey.split(Pattern.quote("."));
+    Element parentNode = formData.getDocumentElement();
+
+    Node node = GetEndNode(parentNode, keys, 0);
+//    int questions = CountChildren(node, "Questions");
+    Node questionsNode = node.getParentNode();
+    int siblings = countSiblingsNamed(questionsNode, "Questions");
+    return siblings;
+  }
+
+  public static int CountChildren(Node node, String childKey) {
+    Node child = node.getFirstChild();
+    int count = 0;
+    while (child != null) {
+      if (childKey.equals(child.getNodeName())) {
+        count++;
+      }
+      child = child.getNextSibling();
+    }
+    return count;
+  }
+
+  public static int countSiblingsNamed(final Node node, String keyFilter) {
+    Node current = node;
+    int count = 0;
+    while (current != null) {
+      if (keyFilter.equals(current.getNodeName())) {
+        count++;
+      }
+      current = current.getNextSibling();
+    }
+    return count;
+  }
+
+  public static Node GetEndNode(Node parentNode, String[] keys, int keyIndex) {
+    if (parentNode == null || keys == null || keyIndex > (keys.length - 1)) {
+      return null;
+    }
+    NodeList childNodes = parentNode.getChildNodes();
+    if (childNodes == null || childNodes.getLength() == 0) {
+      return null;
+    }
+
+    int indexCounter = -1; // for some data models we need to find a given child by index
+    for (int i = 0; i < childNodes.getLength(); i++) {
+      Node childNode = childNodes.item(i);
+      String nodeName = childNode.getNodeName();
+      nodeName = nodeName.replace("-", "").toLowerCase();
+      String key = keys[keyIndex].replace("-", "").toLowerCase();
+      int groupIndex;
+      if (key.contains("[")) {
+        // The key have an index
+        groupIndex = Integer.parseInt(key.substring(key.indexOf("[") + 1, key.indexOf("]")));
+        key = key.replace("[" + groupIndex + "]", "");
+      } else {
+        groupIndex = 0;
+      }
+      if (nodeName == null) {
+        continue;
+      }
+      if (nodeName.equals(key)) {
+        // We have a match.
+        indexCounter ++;
+      }
+      if (nodeName.equals(key) && indexCounter == groupIndex) {
+        if ((keys.length - 1) == keyIndex) {
+          // If no more partial keys we have reached bottom node, return value if present
+
+          Node value;
+          if (childNode.getFirstChild() != null) {
+            value = childNode.getFirstChild();
+          }
+          else {
+            value = childNode;
+          }
+          if (value != null) {
+            return value;
+//            return value;
+          } else {
+            return null;
+          }
+        } else {
+          // We keep digging
+          return GetEndNode(childNode, keys, keyIndex + 1);
+        }
+      }
+    }
+    return null;
+  }
+
   /**
    * Looks for the value of the end node in a series of nested elements. Calls itself recursively.
    * @param parentNode the parent node

@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static altinn.platform.pdf.utils.FormUtils.getFormDataByKey;
+
 public class PDFGenerator {
   private PDDocument document;
   private PDAcroForm form;
@@ -208,6 +210,8 @@ public class PDFGenerator {
       String componentType = element.getType();
       if (componentType.equalsIgnoreCase("group")) {
         renderGroup(element, false);
+      } else if (componentType.equalsIgnoreCase("likert")) {
+        renderLikert(element);
       } else {
         renderLayoutElement(element);
       }
@@ -259,6 +263,40 @@ public class PDFGenerator {
           childElement.setDataModelBindings(originalDataModelBindings);
         }
       }
+    }
+  }
+
+  private void renderLikert(FormLayoutElement element) throws IOException {
+    String componentId = element.getId();
+    if (!LayoutUtils.includeComponentInPdf(componentId, layoutSettings)) {
+      return;
+    }
+    Map<String, String> likertBinding = (Map<String, String>) element.getDataModelBindings().get("likert");
+    String list = likertBinding.get("list");
+    String question = likertBinding.get("question");
+    String answer = likertBinding.get("answer");
+
+    int count = FormUtils.countElements(list, formData);
+
+    for (int i = 0; i < count; i++) {
+      String baseKey = list + "[" + i + "]";
+      String questionKey = baseKey + "." + question;
+      String answerKey = baseKey + "." + answer;
+      String optionsIdKey = baseKey + ".optionsId";
+
+      String theQuestion = getFormDataByKey(questionKey, formData);
+      String theAnswer = getFormDataByKey(answerKey, formData);
+      String theOptionsId = getFormDataByKey(optionsIdKey, formData);
+
+      FormLayoutElement formLayoutElement = new FormLayoutElement();
+      formLayoutElement.setDataModelBindings(new HashMap<>());
+      formLayoutElement.getDataModelBindings().put("simpleBinding", answerKey);
+      formLayoutElement.setTextResourceBindings(new TextResourceBindings());
+      formLayoutElement.getTextResourceBindings().setTitle(theQuestion);
+      formLayoutElement.setType("RadioButtons");
+      formLayoutElement.setOptionsId(theOptionsId);
+
+      renderLayoutElement(formLayoutElement);
     }
   }
 
@@ -432,7 +470,7 @@ public class PDFGenerator {
     if (element.getOptionsId() != null || element.getOptions() != null) {
       value = getDisplayValueFromOptions(element);
     } else {
-      value = FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("simpleBinding"), formData);
+      value = getFormDataByKey((String) element.getDataModelBindings().get("simpleBinding"), formData);
     }
 
     if (element.getType().equalsIgnoreCase("Datepicker")) {
@@ -443,7 +481,7 @@ public class PDFGenerator {
   }
 
   private String getDisplayValueFromOptions(FormLayoutElement element) {
-    String value = FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("simpleBinding"), formData);
+    String value = getFormDataByKey((String) element.getDataModelBindings().get("simpleBinding"), formData);
     List<String> splitFormData;
     if (element.getType().equalsIgnoreCase("Checkboxes")) {
       // checkboxes can have multiple values, need to fetch label for each one
@@ -582,25 +620,25 @@ public class PDFGenerator {
 
   private void renderAddressComponent(FormLayoutElement element) throws IOException {
     renderText(getLanguageString("address"), font, fontSize, StandardStructureTypes.P);
-    renderContent(FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("address"), this.formData));
+    renderContent(getFormDataByKey((String) element.getDataModelBindings().get("address"), this.formData));
     yPoint -= componentMargin;
 
     renderText(getLanguageString("zip_code"), font, fontSize, StandardStructureTypes.P);
-    renderContent(FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("zipCode"), this.formData));
+    renderContent(getFormDataByKey((String) element.getDataModelBindings().get("zipCode"), this.formData));
     yPoint -= componentMargin;
 
     renderText(getLanguageString("post_place"), font, fontSize, StandardStructureTypes.P);
-    renderContent(FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("postPlace"), this.formData));
+    renderContent(getFormDataByKey((String) element.getDataModelBindings().get("postPlace"), this.formData));
     yPoint -= componentMargin;
 
     if (!element.isSimplified()) {
       renderText(getLanguageString("care_of"), font, fontSize, StandardStructureTypes.P);
       renderText(getLanguageString("house_number_helper"), font, fontSize, StandardStructureTypes.P);
-      renderContent(FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("careOf"), this.formData));
+      renderContent(getFormDataByKey((String) element.getDataModelBindings().get("careOf"), this.formData));
       yPoint -= componentMargin;
 
       renderText(getLanguageString("house_number"), font, fontSize, StandardStructureTypes.P);
-      renderContent(FormUtils.getFormDataByKey((String) element.getDataModelBindings().get("houseNumber"), this.formData));
+      renderContent(getFormDataByKey((String) element.getDataModelBindings().get("houseNumber"), this.formData));
       yPoint -= componentMargin;
     }
   }
@@ -641,7 +679,7 @@ public class PDFGenerator {
       if (res.getVariables() != null) {
         for (TextResourceVariableElement variable : res.getVariables()) {
           if (variable.getDataSource().startsWith("dataModel")) {
-            replaceValues.add(FormUtils.getFormDataByKey(variable.getKey(), formData));
+            replaceValues.add(getFormDataByKey(variable.getKey(), formData));
           }
         }
         res.setValue(replaceParameters(res.getValue(), replaceValues));
