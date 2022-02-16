@@ -1,18 +1,21 @@
-import * as React from 'react';
+import React from 'react';
 import { shallowEqual } from 'react-redux';
-import { getTextResourceByKey } from 'altinn-shared/utils';
-import { ILabelSettings, Triggers, IComponentValidations } from 'src/types';
-
 import { Grid, makeStyles } from '@material-ui/core';
 import classNames from 'classnames';
-import components, { IComponentProps } from '.';
-import FormDataActions from '../features/form/data/formDataActions';
-import {
+
+import type { IComponentProps } from '.';
+import type { ILanguage } from 'altinn-shared/types';
+import type { ILabelSettings, IComponentValidations } from 'src/types';
+import type {
   IDataModelBindings,
   IGrid,
   IGridStyling,
   ITextResourceBindings,
 } from '../features/form/layout';
+
+import components from '.';
+import { getTextResourceByKey } from 'altinn-shared/utils';
+import FormDataActions from '../features/form/data/formDataActions';
 import RuleActions from '../features/form/rules/rulesActions';
 import { setCurrentSingleFieldValidation } from '../features/form/validation/validationSlice';
 import { makeGetFocus, makeGetHidden } from '../selectors/getLayoutData';
@@ -30,7 +33,7 @@ import {
 import { FormLayoutActions } from '../features/form/layout/formLayoutSlice';
 import Description from '../features/form/components/Description';
 import { useAppDispatch, useAppSelector } from 'src/common/hooks';
-import { ILanguage } from 'altinn-shared/types';
+import { Triggers } from 'src/types';
 
 export interface IGenericComponentProps {
   id: string;
@@ -103,12 +106,14 @@ export function GenericComponent(props: IGenericComponentProps) {
   const textResources = useAppSelector(
     (state) => state.textResources.resources,
   );
-  const texts = useAppSelector((state) =>
+
+  const texts = useAppSelector(state =>
     selectComponentTexts(
       state.textResources.resources,
       props.textResourceBindings,
     ),
   );
+
   const hidden = useAppSelector(
     (state) => props.hidden || GetHiddenSelector(state, props),
   );
@@ -131,6 +136,7 @@ export function GenericComponent(props: IGenericComponentProps) {
   const handleDataUpdate = (
     value: string,
     key = 'simpleBinding',
+    skipValidation = false,
     rowIndex = 0,
   ) => {
     if (!props.dataModelBindings || !props.dataModelBindings[key]) {
@@ -168,6 +174,7 @@ export function GenericComponent(props: IGenericComponentProps) {
         field: dataModelBinding,
         data: value,
         componentId: props.id,
+        skipValidation
       }),
     );
 
@@ -232,9 +239,10 @@ export function GenericComponent(props: IGenericComponentProps) {
 
   const RenderDescription = () => {
     // eslint-disable-next-line react/prop-types
-    if (!props.textResourceBindings.description) {
+    if (!props.textResourceBindings?.description) {
       return null;
     }
+
     return (
       <Description
         // eslint-disable-next-line react/prop-types
@@ -297,7 +305,7 @@ export function GenericComponent(props: IGenericComponentProps) {
     ...passThroughProps,
   };
 
-  const noLabelComponents: string[] = [
+  const noLabelComponents = [
     'Header',
     'Paragraph',
     'Image',
@@ -309,6 +317,7 @@ export function GenericComponent(props: IGenericComponentProps) {
     'RadioButtons',
     'AttachmentList',
     'InstantiationButton',
+    'NavigationBar',
   ];
 
   return (

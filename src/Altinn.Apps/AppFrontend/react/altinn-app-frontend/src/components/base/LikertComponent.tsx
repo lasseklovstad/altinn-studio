@@ -20,6 +20,7 @@ import {
 import { StyledRadio } from './RadioButtonsContainerComponent';
 import { useState, useEffect } from 'react';
 import { renderValidationMessagesForComponent } from '../../utils/render';
+import { IOption, IOptionData } from 'src/types';
 
 export interface ILikertComponentProps extends IComponentProps {
   componentValidations?: any;
@@ -29,7 +30,6 @@ export interface ILikertComponentProps extends IComponentProps {
 
 export const LikertComponent = (props: ILikertComponentProps) => {
   const {
-    text,
     optionsId,
     id,
     dataModelBindings,
@@ -39,8 +39,9 @@ export const LikertComponent = (props: ILikertComponentProps) => {
   } = props;
   const apiOptions = useAppSelector(
     (state) => state.optionState.options[optionsId],
-  );
-  const options = apiOptions || [];
+  ) as IOptionData;
+
+  const options = apiOptions.loading ? [] : apiOptions.options;
   const rows = Object.keys(formData)
     .filter((key) => key.includes((dataModelBindings as any).likert.question))
     .map((key) => ({ label: formData[key] }));
@@ -87,7 +88,7 @@ export const LikertComponent = (props: ILikertComponentProps) => {
     );
     setInvalidatedRows(invalidatedRows.filter((row) => row != rowIndex));
     props.handleFocusUpdate(props.id);
-    props.handleDataChange(optionValue, 'likert', rowIndex);
+    props.handleDataChange(optionValue, 'likert', false, rowIndex);
     setSelected(
       selected.map((currentOption, currentRowIndex) => {
         return currentRowIndex === rowIndex ? optionValue : currentOption;

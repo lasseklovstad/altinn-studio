@@ -1,6 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { screen, fireEvent, within, waitFor } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 
 import { renderWithProviders } from '../../../testUtils';
 
@@ -54,7 +54,10 @@ const render = (props: Partial<ILikertComponentProps> = {}) => {
     preloadedState: {
       optionState: {
         options: {
-          trivsel,
+          trivsel: {
+            id: 'trivsel',
+            options: trivsel,
+          },
         },
         error: {
           name: '',

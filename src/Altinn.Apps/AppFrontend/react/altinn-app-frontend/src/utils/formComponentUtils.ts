@@ -22,6 +22,7 @@ import {
   IValidations,
 } from 'src/types';
 import { AsciiUnitSeparator } from './attachment';
+import { getOptionLookupKey } from './options';
 
 export const componentValidationsHandledByGenericComponent = (
   dataModelBindings: any,
@@ -153,7 +154,7 @@ export const getDisplayFormData = (
           (option: IOption) => option.value === formDataValue,
         )?.label;
       } else if (selectionComponent.optionsId) {
-        label = options[selectionComponent.optionsId]?.find(
+        label = options[getOptionLookupKey(selectionComponent?.optionsId, selectionComponent.mapping)].options.find(
           (option: IOption) => option.value === formDataValue,
         )?.label;
       }
@@ -168,7 +169,7 @@ export const getDisplayFormData = (
         const displayFormData = {};
         split?.forEach((value: string) => {
           const optionsForComponent = selectionComponent?.optionsId
-            ? options[selectionComponent.optionsId]
+            ? options[getOptionLookupKey(selectionComponent.optionsId, selectionComponent.mapping)].options
             : selectionComponent.options;
           const textKey =
             optionsForComponent?.find(
@@ -193,7 +194,7 @@ export const getDisplayFormData = (
         } else if (selectionComponent.optionsId) {
           label +=
             getTextResourceByKey(
-              options[selectionComponent.optionsId]?.find(
+              options[getOptionLookupKey(selectionComponent.optionsId, selectionComponent.mapping)]?.options.find(
                 (option: IOption) => option.value === value,
               )?.label,
               textResources,
@@ -277,9 +278,11 @@ export function selectComponentTexts(
 ) {
   const result: { [textResourceKey: string]: React.ReactNode } = {};
 
-  Object.keys(textResourceBindings).forEach((key) => {
-    result[key] = getTextResource(textResourceBindings[key], textResources);
-  });
+  if (textResourceBindings) {
+    Object.keys(textResourceBindings).forEach((key) => {
+      result[key] = getTextResource(textResourceBindings[key], textResources);
+    });
+  }
 
   return result;
 }

@@ -13,6 +13,7 @@ import { RadioButtonContainerComponent } from './base/RadioButtonsContainerCompo
 import { TextAreaComponent } from './base/TextAreaComponent';
 import { ImageComponent } from './base/ImageComponent';
 import { NavigationButtons as NavigationButtonsComponent } from './presentation/NavigationButtons';
+import { NavigationBar } from './base/NavigationBar';
 import { InstantiationButtonComponent } from './base/InstantiationButtonComponent';
 import { IGenericComponentProps } from './GenericComponent';
 import { IComponentFormData } from 'src/utils/formComponentUtils';
@@ -46,6 +47,7 @@ export enum ComponentTypes {
   NavigationButtons,
   InstantiationButton,
   AttachmentList,
+  NavigationBar,
   Likert
 }
 
@@ -155,6 +157,11 @@ export const schemaComponents: IComponent[] = [
     Type: ComponentTypes.AttachmentList,
   },
   {
+    name: 'NavigationBar',
+    Tag: NavigationBar,
+    Type: ComponentTypes.NavigationBar,
+  },
+  {
     name: 'Likert',
     Tag: LikertComponent,
     Type: ComponentTypes.Likert,
@@ -174,7 +181,7 @@ export const advancedComponents: IComponent[] = [
 ];
 
 export interface IComponentProps extends IGenericComponentProps {
-  handleDataChange: (value: string, key?: string, rowIndex?: number) => void;
+  handleDataChange: (value: string, key?: string, skipValidation?: boolean, rowIndex?: number) => void;
   handleFocusUpdate: (componentId: string, step?: number) => void;
   getTextResource: (key: string) => React.ReactNode;
   getTextResourceAsString: (key: string) => string;
