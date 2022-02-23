@@ -289,10 +289,6 @@ namespace Altinn.Platform.Storage.Controllers
         /// <!-- POST /instances?appId={appId} -->
         [Authorize]
         [HttpPost]
-        [Consumes("application/json")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Produces("application/json")]
         public async Task<ActionResult<Instance>> Post(string appId, [FromBody] Instance instance)
         {
             (Application appInfo, ActionResult appInfoError) = await GetApplicationOrErrorAsync(appId);
