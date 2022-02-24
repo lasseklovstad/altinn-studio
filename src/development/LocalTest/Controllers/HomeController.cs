@@ -26,6 +26,7 @@ using LocalTest.Services.LocalApp.Interface;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Newtonsoft.Json;
 
 namespace LocalTest.Controllers
 {
@@ -114,6 +115,17 @@ namespace LocalTest.Controllers
                 claims.Add(new Claim(AltinnCoreClaimTypes.UserName, profile.UserName, ClaimValueTypes.String, issuer));
                 claims.Add(new Claim(AltinnCoreClaimTypes.PartyID, profile.PartyId.ToString(), ClaimValueTypes.Integer32, issuer));
                 claims.Add(new Claim(AltinnCoreClaimTypes.AuthenticationLevel, startAppModel.AuthenticationLevel, ClaimValueTypes.Integer32, issuer));
+
+                string pathAdditionalClaims = _localPlatformSettings.LocalTestingStaticTestDataPath + "Profile/Claims/" + profile.UserId.ToString() + ".json";
+                if (System.IO.File.Exists(pathAdditionalClaims))
+                {
+                    string content = System.IO.File.ReadAllText(pathAdditionalClaims);
+                    var additionalClaims = (Dictionary<string, string>)JsonConvert.DeserializeObject(content, typeof(Dictionary<string, string>));
+                    foreach (var entry in additionalClaims)
+                    {
+                        claims.Add(new Claim(entry.Key, entry.Value));
+                    }
+                }
 
                 ClaimsIdentity identity = new ClaimsIdentity(_generalSettings.GetClaimsIdentity);
                 identity.AddClaims(claims);
@@ -239,7 +251,7 @@ namespace LocalTest.Controllers
                 var authLevelNode = document.SelectSingleNode("/xacml:Policy/xacml:ObligationExpressions/xacml:ObligationExpression[@ObligationId='urn:altinn:obligation:authenticationLevel1']/xacml:AttributeAssignmentExpression[@Category='urn:altinn:minimum-authenticationlevel']/xacml:AttributeValue", nsMngr);
                 return int.Parse(authLevelNode.InnerText);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 // Return default auth level if Single app auth level can't be found.
                 return 2;
